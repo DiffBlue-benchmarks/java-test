@@ -5,11 +5,16 @@ testCmd: cd main-module; mvn cobertura:cobertura; cobertura-report --datafile ta
 reportFile: main-module/coverage.xml
 timeout: 3600
 memout: 8000000000
-cbmcArguments: --java-max-input-array-length 9
+cbmcArguments: 
+  java-max-input-array-length: 9
 tool:
   language: java
-  cbmcArguments: >-
-    --cover location --gen-java-test-case --java-disable-mocks
-    --assertions-as-assumptions --unwind 9 --java-max-input-array-length 9
+  cbmcArguments:
+    cover: location 
+    gen-java-test-case: true
+    java-disable-mocks: true
+    assertions-as-assumptions: true
+    unwind: 9
+    java-max-input-array-length: 9
   timeout: 300
   memout: 1000000000
