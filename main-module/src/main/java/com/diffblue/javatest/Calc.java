@@ -1,45 +1,62 @@
 package com.diffblue.javatest;
 
+import java.util.Stack;
+
 public class Calc {
-  static int div(int a, int b) {
-    return a / b;
+  public enum MathsOperators {
+    ADD,
+    SUBTRACT,
+    MULTIPLY,
+    DIVIDE,
+    POWER,
+    CONCAT,
+    NEXT,
   }
 
-  public static int calc(String str)
-  {
-    int index;
-
-    index = str.lastIndexOf('+');
-    if (index != -1) {
-      return calc(str.substring(0,index)) + calc(str.substring(index + 1));
+  static int polish(MathsOperators[] operations) {
+    int nextVal = 3;
+    Stack<Integer> stack = new Stack<Integer>();
+    stack.push(1);
+    stack.push(2);
+    for (MathsOperators o : operations) {
+      if (o == MathsOperators.NEXT) {
+        stack.push(nextVal);
+        nextVal += 1;
+        continue;
+      }
+      Integer a = stack.pop();
+      Integer b = stack.pop();
+      switch (o) {
+        case ADD:
+          stack.push(a + b);
+          break;
+        case SUBTRACT:
+          stack.push(a - b);
+          break;
+        case MULTIPLY:
+          stack.push(a * b);
+          break;
+        case DIVIDE:
+          stack.push(a / b);
+          break;
+        case POWER:
+          stack.push(a ^ b);
+          break;
+        case CONCAT:
+          if (a < 10 && a >= 0) {
+            stack.push(10 * a + b);
+          } else {
+            throw new RuntimeException("Tried to concatenate " + a + " and " + b);
+          }
+          break;
+      }
     }
-
-    // index = str.lastIndexOf('-');
-    // if (index != -1) {
-    //   return calc(str.substring(0,index)) - calc(str.substring(index + 1));
-    // }
-
-    // index = str.lastIndexOf('/');
-    // if (index != -1) {
-    //   return calc(str.substring(0,index)) / calc(str.substring(index + 1));
-    // }
-
-    // index = str.lastIndexOf('*');
-    // if (index != -1) {
-    //   return calc(str.substring(0,index)) * calc(str.substring(index + 1));
-    // }
-
-    return myParseInt(str);
-  }
-
-  public static int myParseInt(String str) {
-    assert(str.length() != 0);
-    int result = 0;
-    for (int pos = 0; pos < str.length(); pos++) {
-      char chr = str.charAt(pos);
-      assert(chr >= '0' && chr <= '9');
-      result = 10 * result + (chr & 0xf);
+    if (nextVal != 10) {
+      throw new RuntimeException("Error, we require 7 NEXT statements; got " + nextVal);
     }
-    return result;
+    if (stack.size() != 1) {
+      throw new RuntimeException("The stack should end just 1 item long; got " + stack.size());
+    }
+    return stack.pop();
   }
 }
